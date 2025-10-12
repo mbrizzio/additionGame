@@ -4,7 +4,7 @@ void gameParameters::calculatePoints() {
     double range = pow(log10(upperBound - lowBound), 3);
     double quantity = pow(numNumbers - 1, 1.5);
     double timeOnScreen = 50.f / (double)timePerNumber;
-    double timeBetween = 25.f / (double)timeBetweenNumbers;
+    double timeBetween = sqrt(25.f / (double)timeBetweenNumbers);
 
     points = range * quantity * timeOnScreen * timeBetween;
 
@@ -12,15 +12,18 @@ void gameParameters::calculatePoints() {
 }
 
 void gameParameters::chooseNums() {
-    // First we want to define a random object from today's date
-    auto now = chrono::sys_seconds::duration().count();
-    cout << now << endl;
-    mt19937 rng(now);
+    auto now = chrono::high_resolution_clock::now();
+    auto seed = chrono::duration_cast<chrono::seconds>(now.time_since_epoch());
+
+    std::cout << "Seed: " << seed.count() << endl;
+
+    mt19937 rng(seed.count());
 
     uniform_int_distribution<int> range(lowBound, upperBound);
 
     for (int i = 0; i < numNumbers; ++i) {
         nums.push_back(range(rng));
+        cout << nums.back() << endl;
     }
 
 }

@@ -1,6 +1,7 @@
 #include "helperFunctions.h"
 #include "titleScreen.h"
 #include "countdown.h"
+#include "showNums.h"
 
 
 int main() {
@@ -29,10 +30,13 @@ int main() {
     // Countdown state
     CountdownScreen countdownScreen(window, event, arial);
     countdownScreen.declareObjects();
+
+    NumberHandler numberHandler(window, event, arial, params);
+    numberHandler.declareObjects();
     
 
     sf::Clock clock;
-    float countdown;
+    float countdown, betweenCountdown, numCountdown;
     
     // Set the state
     State machine = State::TITLE;
@@ -56,13 +60,27 @@ int main() {
                     
                     if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
                         machine = State::COUNTDOWN;
-                        countdown = 3.0f;
+                        countdown = 2.0f;
                         clock.restart();
+
+                        params.chooseNums();
                     }
                     break;
                 }
 
                 case State::COUNTDOWN: {
+                    // No inputs to process here
+
+                    break;
+                }
+
+                case State::BETWEENNUM: {
+                    // No inputs to process here
+
+                    break;
+                }
+
+                case State::SHOWNUM: {
                     // No inputs to process here
 
                     break;
@@ -88,14 +106,18 @@ int main() {
             }
 
             case State::COUNTDOWN: {
-                if (countdown <= 0.1) {
-                    machine = State::SHOWNUM;
+                if (countdown <= 0.02) {
+                    machine = State::BETWEENNUM;
+                    betweenCountdown = params.timeBetweenNumbers / 100.f;
+
+                    clock.restart();
+
+                    cout << "Switching to between nums" << endl;
+
                     continue;
                 }
 
                 countdown -= clock.restart().asSeconds();
-                cout << countdown << endl;
-
                 
                 countdownScreen.updateObjects(countdown);
                 countdownScreen.drawObjects();
@@ -103,9 +125,48 @@ int main() {
             }
 
             case State::SHOWNUM: {
-                window.close();
+                if (numCountdown <= 0) {
+                    machine = State::BETWEENNUM;
+                    betweenCountdown = params.timeBetweenNumbers / 100.f;
+
+                    clock.restart();
+
+                    cout << "Switching to between nums" << endl;
+
+                    continue;
+                }
+
+                numCountdown -= clock.restart().asSeconds();
+
+                cout << "numCountdown: " << numCountdown << endl;
+
+                numberHandler.updateObjects(numCountdown);
+                numberHandler.drawObjects();
 
                 break;
+            }
+
+            case State::BETWEENNUM: {
+                if (betweenCountdown <= 0) {
+                    machine = numberHandler.pickNum();
+                    numCountdown = params.timePerNumber / 100.f;
+
+                    clock.restart();
+
+                    cout << "Switching to next num " << numCountdown << endl;
+
+                    continue;
+                }
+
+                betweenCountdown -= clock.restart().asSeconds();
+
+                cout << "Between clock: " << betweenCountdown << endl;
+
+                break;
+            }
+
+            case State::GUESS: {
+                window.close();
             }
 
             default: {
