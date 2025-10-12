@@ -19,7 +19,9 @@ enum State {
     COUNTDOWN,
     SHOWNUM,
     BETWEENNUM,
-    GUESS
+    GUESS,
+    RESULT,
+    LEADERBOARD
 };
 
 struct gameParameters {
@@ -37,6 +39,8 @@ struct gameParameters {
   int currentNum;
   int sum = 0;
   void chooseNums();
+
+  int guess;
   
   const std::vector<char> validUnicode = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 };

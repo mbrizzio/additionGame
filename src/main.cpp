@@ -2,7 +2,7 @@
 #include "titleScreen.h"
 #include "countdown.h"
 #include "showNums.h"
-
+#include "finalGuess.h"
 
 int main() {
     // Pre window drawing
@@ -31,12 +31,18 @@ int main() {
     CountdownScreen countdownScreen(window, event, arial);
     countdownScreen.declareObjects();
 
+    // Show the numbers and wait a bit 
     NumberHandler numberHandler(window, event, arial, params);
     numberHandler.declareObjects();
-    
+
+    // Guess from the User
+    FinalGuess finalGuess(window, event, arial, params);
+    finalGuess.declareObjects();    
 
     sf::Clock clock;
-    float countdown, betweenCountdown, numCountdown;
+    float countdown, betweenCountdown, numCountdown, guessCountdown, resultCountdown;
+    guessCountdown = 15.f;
+    resultCountdown = 3.f;
     
     // Set the state
     State machine = State::TITLE;
@@ -84,6 +90,21 @@ int main() {
                     // No inputs to process here
 
                     break;
+                }
+
+                case State::GUESS: {
+                    finalGuess.handleUserInput();
+
+                    if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
+                        machine = State::RESULT;
+                        clock.restart();
+
+                        finalGuess.stateTransition();
+
+                        cout << "switching to results due to user input" << endl;
+                    }
+                    break;
+
                 }
 
                 default: {
@@ -166,8 +187,26 @@ int main() {
             }
 
             case State::GUESS: {
-                window.close();
+                if (guessCountdown <= 0) {
+                    clock.restart();
+
+                    cout << "Switching to result " << endl;
+
+                    finalGuess.stateTransition();
+                    machine = State::RESULT;
+
+                    continue;
+                }
+
+                guessCountdown -= clock.restart().asSeconds();
+
+                finalGuess.updateCountdown(guessCountdown);
+                finalGuess.drawObjects();
+
+                break;
             }
+
+            
 
             default: {
                 window.clear(sf::Color::Black);    
