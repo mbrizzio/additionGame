@@ -9,7 +9,7 @@ class TitleScreen {
     
     void declareTitleScreenObjects();
     void drawObjects();
-    void updateTitleScreen();
+    void handleTitleScreenInputs();
     
 
   private:

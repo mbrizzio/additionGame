@@ -9,6 +9,8 @@
 #include <ranges>
 #include <math.h>
 #include <iomanip>
+#include <random>
+#include <chrono>
 
 using namespace std;
 
@@ -30,6 +32,9 @@ struct gameParameters {
 
   double points;
   void calculatePoints();
+
+  vector<int> nums;
+  void chooseNums();
   
   const std::vector<char> validUnicode = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 };

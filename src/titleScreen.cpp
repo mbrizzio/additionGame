@@ -278,12 +278,7 @@ void TitleScreen::getActiveObject() {
     active = nullptr;
 }
 
-void TitleScreen::updateTitleScreen() {
-    window.clear(sf::Color::Black);
-
-    // Draw all the text, updates are seen on the next frame
-    drawObjects();
-
+void TitleScreen::handleTitleScreenInputs() {
     if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Button::Left) {
         getActiveObject();
     }
