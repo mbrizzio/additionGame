@@ -1,18 +1,11 @@
-#pragma once
 #include "helperFunctions.h"
-
-using namespace std;
-
-enum State {
-    TITLE
-};
+#include "titleScreen.h"
 
 
 int main() {
     // Pre window drawing
-    const vector<char> validUnicode = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'};
-    string numNumbers = "";
-    
+    gameParameters params;
+
     // Window drawing
     sf::RenderWindow window(sf::VideoMode(1280, 720), "Addition Game");
     window.setVerticalSyncEnabled(true);
@@ -28,6 +21,10 @@ int main() {
         exit(1);
     }
 
+    // Objects controlling the different states
+    TitleScreen titleScreen(window, event, arial, params);
+    titleScreen.declareTitleScreenObjects();
+
 
     // Set the state
     State machine = State::TITLE;
@@ -39,56 +36,23 @@ int main() {
         while (window.pollEvent(event)) {
             
             // Stuff that needs to happen no matter what state we are on
-            if (event.type == sf::Event::Closed) {
+            if (event.type == sf::Event::Closed || event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
                 window.close();
             }
+
 
             // Draw what is needed for the current state
             switch (machine) {
                 case State::TITLE: {
-                    window.clear(sf::Color::Black);
+                    titleScreen.updateTitleScreen();
                     
-                    // Declare the main title
-                    sf::Text displayMainTitle;
-                    displayMainTitle.setFont(arial);
-                    displayMainTitle.setCharacterSize(48);
-                    displayMainTitle.setFillColor(sf::Color::White);
-                    displayMainTitle.setString("The Addition Game");
-
-                    centerOrigin(displayMainTitle);
-                    displayMainTitle.setPosition(1280/2, 100);
-
-                    // Declare the numNumbers string
-                    sf::Text displayNumNumbers;
-                    displayNumNumbers.setFont(arial);
-                    displayNumNumbers.setCharacterSize(24);
-                    displayNumNumbers.setFillColor(sf::Color::White);
-                    displayNumNumbers.setString(numNumbers);
-
-                    centerOrigin(displayNumNumbers);
-                    displayNumNumbers.setPosition(1280/2, 300);
-                    
-                    
-                    // If we detect a backspace, delete the last character
-                    if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Key::BackSpace) {
-                        if (!numNumbers.empty()) numNumbers.pop_back();
-                        cout << numNumbers << endl;
+                    if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
+                        machine = State::COUNTDOWN;
                     }
-                    
-                    // If we detect a keypress, add it to the current string
-                    else if (event.type == sf::Event::TextEntered && 
-                             ranges::find(validUnicode, static_cast<char>(event.text.unicode)) != validUnicode.end()){
-                        
-                        numNumbers += static_cast<char>(event.text.unicode);
-                        cout << numNumbers << endl;
-                    }
-
-                    // Draw all the text. Do this at the end so all the postprocessing is done!
-
-                    window.draw(displayMainTitle);
-                    window.draw(displayNumNumbers);
-
                     break;
+                }
+                case State::COUNTDOWN: {
+                    
                 }
                 default: {
                     window.clear(sf::Color::Black);    
