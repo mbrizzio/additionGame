@@ -12,6 +12,9 @@ class FinalGuess {
     void handleUserInput();
     void stateTransition();
 
+    void updateResult();
+    void drawResult();
+
   private:
     sf::Text userGuess;
     sf::Text explanation;

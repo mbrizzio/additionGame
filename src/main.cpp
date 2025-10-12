@@ -76,19 +76,16 @@ int main() {
 
                 case State::COUNTDOWN: {
                     // No inputs to process here
-
                     break;
                 }
 
                 case State::BETWEENNUM: {
                     // No inputs to process here
-
                     break;
                 }
 
                 case State::SHOWNUM: {
                     // No inputs to process here
-
                     break;
                 }
 
@@ -105,6 +102,11 @@ int main() {
                     }
                     break;
 
+                }
+
+                case State::RESULT: {
+                    // No inputs to process here
+                    break;
                 }
 
                 default: {
@@ -190,7 +192,7 @@ int main() {
                 if (guessCountdown <= 0) {
                     clock.restart();
 
-                    cout << "Switching to result " << endl;
+                    cout << "Switching to result due to inactivity" << endl;
 
                     finalGuess.stateTransition();
                     machine = State::RESULT;
@@ -206,7 +208,23 @@ int main() {
                 break;
             }
 
-            
+            case State::RESULT: {
+                if (resultCountdown <= 0) {
+                    clock.restart();
+
+                    cout << "Switching to leaderboard" << endl;
+
+                    machine = State::LEADERBOARD;
+
+                    continue;
+                }
+                
+                resultCountdown -= clock.restart().asSeconds();
+                
+                finalGuess.drawResult();
+
+                break;
+            }
 
             default: {
                 window.clear(sf::Color::Black);    

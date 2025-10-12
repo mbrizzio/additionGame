@@ -29,6 +29,8 @@ State NumberHandler::pickNum() {
 
   displayNumber.setString(to_string(params.currentNum));
 
+  displayNumber.setFillColor(sf::Color::White);
+
   return State::SHOWNUM;
 }
 
@@ -38,6 +40,6 @@ void NumberHandler::updateObjects(float countdown) {
   if (alpha < 255) {
     cout << alpha << endl;
 
-    displayNumber.setFillColor(sf::Color(255, 255, 255, (sf::Uint8)alpha));
+    displayNumber.setFillColor(sf::Color(255, 255, 255, (sf::Uint8)max((int)alpha, 0)));
   }
 }

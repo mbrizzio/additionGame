@@ -30,6 +30,18 @@ void FinalGuess::declareObjects() {
   displayContdown.setString("15.00");
 
   displayContdown.setPosition(0, 0);
+
+
+
+  // Final result
+  resultScreen.setFillColor(sf::Color::White);
+  resultScreen.setFont(font);
+  resultScreen.setCharacterSize(48);
+  resultScreen.setString("Good luck");
+
+  centerOrigin(&resultScreen);
+
+  resultScreen.setPosition(1280/2, 720/2 - 100);
 }
 
 void FinalGuess::updateCountdown(float countdown) {
@@ -37,7 +49,24 @@ void FinalGuess::updateCountdown(float countdown) {
   dummy << fixed << setprecision(2) << countdown;
 
   displayContdown.setString(dummy.str());
+}
 
+void FinalGuess::updateResult() {
+  if (params.guess == params.sum){
+    resultScreen.setString("Congratulations! The correct sum indeed was " + to_string(params.guess));
+    cout << "winner!" << endl;
+  }
+  else {
+    resultScreen.setString("Tough luck! \nThe correct answer was " + to_string(params.sum) + " \nwhile you guessed " + to_string(params.guess));
+    cout << "loser!" << endl;
+  }
+
+  centerOrigin(&resultScreen);
+  resultScreen.setPosition(1280/2, 720/2);
+}
+
+void FinalGuess::drawResult() {
+  window.draw(resultScreen);
 }
 
 void FinalGuess::drawObjects() {
@@ -48,6 +77,8 @@ void FinalGuess::drawObjects() {
 
 void FinalGuess::stateTransition() {
   params.guess = stoi(userGuess.getString().toAnsiString());
+
+  updateResult();
 }
 
 void FinalGuess::handleUserInput() {
