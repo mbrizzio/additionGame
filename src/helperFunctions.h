@@ -11,6 +11,7 @@
 #include <iomanip>
 #include <random>
 #include <chrono>
+#include <fstream>
 
 using namespace std;
 
@@ -21,6 +22,7 @@ enum State {
     BETWEENNUM,
     GUESS,
     RESULT,
+    SAVE,
     LEADERBOARD
 };
 
@@ -42,7 +44,7 @@ struct gameParameters {
 
   int guess;
   
-  const std::vector<char> validUnicode = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+  std::vector<char> validUnicode = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 };
 
 

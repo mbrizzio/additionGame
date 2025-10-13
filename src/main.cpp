@@ -3,11 +3,9 @@
 #include "countdown.h"
 #include "showNums.h"
 #include "finalGuess.h"
+#include "leaderboard.h"
 
 int main() {
-    // Pre window drawing
-    gameParameters params;
-
     // Window drawing
     sf::RenderWindow window(sf::VideoMode(1280, 720), "Addition Game");
     window.setVerticalSyncEnabled(true);
@@ -22,6 +20,12 @@ int main() {
         cerr << "Font file not found" << endl;
         exit(1);
     }
+
+
+    // Declare the leaderboard so we can get the gameparams for later use
+    Leaderboard leaderboard("../src/assets/leaderboard.txt");
+    gameParameters params = leaderboard.getFirstSettings();
+    cout << "is it settings?" << endl;
 
     // Objects controlling the different states
     TitleScreen titleScreen(window, event, arial, params);
@@ -38,6 +42,10 @@ int main() {
     // Guess from the User
     FinalGuess finalGuess(window, event, arial, params);
     finalGuess.declareObjects();    
+
+    // SaveName for the user to register their score if they win
+    SaveName saveName(window, event, arial, params);
+    saveName.declareObjects();
 
     sf::Clock clock;
     float countdown, betweenCountdown, numCountdown, guessCountdown, resultCountdown;
@@ -106,6 +114,21 @@ int main() {
 
                 case State::RESULT: {
                     // No inputs to process here
+                    break;
+                }
+
+                case State::SAVE: {
+                    saveName.handleUserInput();
+                    
+                    if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
+                        machine = State::LEADERBOARD;
+                        clock.restart();
+
+                        leaderboard.addEntry(params, saveName.getName());
+
+                        cout << "switching to leaderboard due to user input" << endl;
+                    }
+
                     break;
                 }
 
@@ -211,7 +234,14 @@ int main() {
             case State::RESULT: {
                 if (resultCountdown <= 0) {
                     clock.restart();
+                    
+                    if (params.sum == params.guess) {
+                        cout << "Switching to save name" << endl;
+                        machine = State::SAVE;
 
+                        continue;
+
+                    }
                     cout << "Switching to leaderboard" << endl;
 
                     machine = State::LEADERBOARD;
@@ -224,6 +254,11 @@ int main() {
                 finalGuess.drawResult();
 
                 break;
+            }
+
+            case State::SAVE: {
+                saveName.drawObjects();
+                break; // Lebron James reportedly FORGOT to add a break statement at the eend of his case statement
             }
 
             default: {
