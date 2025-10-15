@@ -23,9 +23,8 @@ int main() {
 
 
     // Declare the leaderboard so we can get the gameparams for later use
-    Leaderboard leaderboard("../src/assets/leaderboard.txt");
+    Leaderboard leaderboard("../src/assets/leaderboard.txt", window, arial);
     gameParameters params = leaderboard.getFirstSettings();
-    cout << "is it settings?" << endl;
 
     // Objects controlling the different states
     TitleScreen titleScreen(window, event, arial, params);
@@ -63,9 +62,16 @@ int main() {
         while (window.pollEvent(event)) {
             // Stuff that needs to happen no matter what state we are on
             if (event.type == sf::Event::Closed || event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
+                leaderboard.saveLeaderboard();
                 window.close();
             }
 
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::R) && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
+                leaderboard.saveLeaderboard();
+                window.close();
+
+                main(); // this is so cursed...
+            }
 
             // Draw what is needed for the current state
             switch (machine) {
@@ -126,9 +132,16 @@ int main() {
 
                         leaderboard.addEntry(params, saveName.getName());
 
+                        leaderboard.declareObjects();
+
                         cout << "switching to leaderboard due to user input" << endl;
                     }
 
+                    break;
+                }
+
+                case State::LEADERBOARD: {
+                    // no inputs to be processed in this state
                     break;
                 }
 
@@ -246,6 +259,8 @@ int main() {
 
                     machine = State::LEADERBOARD;
 
+                    leaderboard.declareObjects();
+
                     continue;
                 }
                 
@@ -261,8 +276,13 @@ int main() {
                 break; // Lebron James reportedly FORGOT to add a break statement at the eend of his case statement
             }
 
+            case State::LEADERBOARD: {
+                leaderboard.drawObjects();
+                break;
+            }
+
             default: {
-                window.clear(sf::Color::Black);    
+                window.clear(sf::Color::Blue);    
                 break;
             }
         } // Drawing logic state machine

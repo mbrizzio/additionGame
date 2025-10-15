@@ -10,7 +10,7 @@ struct Entry {
 
 class Leaderboard {
   public:
-    Leaderboard(string saved) : directory(saved) {
+    Leaderboard(string saved, sf::RenderWindow &Window, sf::Font Font) : directory(saved), window(Window), font(Font){
       string holder;
       ifstream file(directory);
 
@@ -33,8 +33,8 @@ class Leaderboard {
 
     void addEntry(gameParameters settings, string name);
     void saveLeaderboard();
+    void drawLeaderboard();
 
-    void handleUserInput();
     void drawObjects();
     void declareObjects();
 
@@ -44,7 +44,11 @@ class Leaderboard {
     map<double, Entry> rankings;
 
     string directory;
+    sf::Text header;
     vector<sf::Text> displayRankngs;
+
+    sf::Font font;
+    sf::RenderWindow &window;
 };
 
 class SaveName {
